@@ -63,8 +63,8 @@ Feel free to modify the `utils.DataLoaders.py` even further, to better suit your
 
 - [x] Implement a data loading class to plug at the very beginning of any pytorch pipeline.
 
-- [] Create the actual pytorch model, according to the design we agreed upon.
+- [ ] Create the actual pytorch model, according to the design we agreed upon.
 
-- [] Create the trainers
+- [ ] Create the trainers
 
-- [] Create the monitors to keep track of the performances throughout training and after.
+- [ ] Create the monitors to keep track of the performances throughout training and after.
