@@ -1,2 +1,2 @@
-# DEQ-project
+# DEQ-tomography
 Implementing and improving DEQ methods
