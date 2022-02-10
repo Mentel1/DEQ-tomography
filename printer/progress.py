@@ -3,9 +3,9 @@ def print_progress(epoch, total_number_epochs, loss):
     A function that prints the current epoch and the average loss on a given image during this epoch
     """
     if epoch == total_number_epochs:
-        print(f'Step: {epoch}/{total_number_epochs} - Loss: {loss: .4f}')
+        print(f'Step: {epoch + 1}/{total_number_epochs + 1} - Loss: {loss: .4f}')
     else:
-        print(f'Step: {epoch}/{total_number_epochs} - Loss: {loss: .4f}', end="\r")
+        print(f'Step: {epoch + 1}/{total_number_epochs + 1} - Loss: {loss: .4f}', end="\r")
 
 if __name__ == "__main__":
     print_progress(1, 4, 0.0567)
