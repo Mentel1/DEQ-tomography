@@ -6,17 +6,16 @@ def epoch(loader, model, device, opt=None, lr_scheduler=None):
     """
     total_loss, total_err = 0.,0.
     model.eval() if opt is None else model.train()
-    for X,y in loader:
-        X,y = X.to(device), y.to(device)
+    for X, y in loader:
+        X, y = X.to(device), y.to(device)
         yp = model(X)
-        loss = nn.CrossEntropyLoss()(yp,y)
+        loss = nn.MSELoss()(yp, y)
         if opt:
             opt.zero_grad()
             loss.backward()
             opt.step()
             lr_scheduler.step()
-                
-        total_err += (yp.max(dim=1)[1] != y).sum().item()
-        total_loss += loss.item() * X.shape[0]
 
-    return total_err / len(loader.dataset), total_loss / len(loader.dataset)
+        total_loss += loss.item() * X.shape[0]
+        
+    return total_loss / len(loader.dataset)
