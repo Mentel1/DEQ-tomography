@@ -83,10 +83,11 @@ class Tomography(torch.utils.data.Dataset):
             outputs_list.append([output_data])
 
         # Put the data into tensors
+        # Unsqueeze to add the channel dimension (shape 1 for grayscale)
         self.inputs_ = torch.from_numpy(np.concatenate(
-            inputs_list, axis=0))
+            inputs_list, axis=0)).unsqueeze(1)
         self.outputs_ = torch.from_numpy(np.concatenate(
-            outputs_list, axis=0))
+            outputs_list, axis=0)).unsqueeze(1)
 
         # Apply transformations if need be
         if transform:
