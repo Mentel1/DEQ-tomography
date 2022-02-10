@@ -4,6 +4,7 @@ def print_progress(epoch, total_number_epochs, loss, training=True):
     """
     if epoch == total_number_epochs:
         print(f'Step: {epoch + 1}/{total_number_epochs} - {"Training" if training else "Testing"} loss: {loss: .4f}')
+        print()
     else:
         print(f'Step: {epoch + 1}/{total_number_epochs} - {"Training" if training else "Testing"} loss: {loss: .4f}', end="\r")
 
