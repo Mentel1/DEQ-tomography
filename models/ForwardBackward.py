@@ -39,11 +39,11 @@ class ForwardBackwardLayer(nn.Module):
         self.learning_rate_ = learning_rate
         self.prox = regul_block(input_size=input_size)
 
-    def forward(self, input_batch, target):
+    def forward(self, input_batch, targets):
         """
         Forward pass
         """
-        output = input_batch - self.learning_rate_ * self.operator_.T @ (target - self.operator_ @ input_batch)
+        output = input_batch - self.learning_rate_ * self.operator_.T @ (targets - self.operator_ @ input_batch)
         output = self.prox(output)
         return output
 
