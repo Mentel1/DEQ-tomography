@@ -12,6 +12,6 @@ def print_grayscale(loader, image_index, input_image=True):
     else:
         _, images = next(dataiter)
 
-    gray_image = images[image_index].numpy()
+    gray_image = images[image_index][0].numpy()
     plt.imshow(gray_image, cmap='gray')
     plt.show()
