@@ -33,8 +33,9 @@ class ForwardBackwardLayer(nn.Module):
     """
     The res net layer
     """
-    def __init__(self, operator, learning_rate, input_size=(512, 512), regul_block=MiniUNet):
+    def __init__(self, operator, learning_rate, input_size=(512, 512), regul_block=MiniUNet, tomosipo=False):
         super().__init__()
+        self.tomosipo_ = tomosipo
         self.operator_ = operator
         self.learning_rate_ = learning_rate
         self.prox = regul_block(input_size=input_size)
@@ -43,20 +44,37 @@ class ForwardBackwardLayer(nn.Module):
         """
         Forward pass
         """
-        output = input_batch - self.learning_rate_ * self.operator_.T @ (targets - self.operator_ @ input_batch)
+        if self.tomosipo_:
+            # We have to remove the channel dimension to apply the tomosipo operator
+            temp = self.operator_.T(targets.squeeze(1) - self.operator_(input_batch.squeeze(1)))
+            # And then put it back so the whole manoeuvre is invisible to pytorch
+            output = input_batch - self.learning_rate_ * temp.unsqueeze(1)
+        else:
+            output = input_batch - self.learning_rate_ * self.operator_.T @ (targets - self.operator_ @ input_batch)
+
         output = self.prox(output)
         return output
 
 if __name__ == "__main__":
     torch.manual_seed(0)
+    batch_size = 3
+    tomosipo = False
 
-    x, y = torch.randn((3, 1, 512, 512)), torch.randn((3, 1, 110, 512))
-    A = torch.randn((110, 512))
+    x, y = torch.randn((batch_size, 1, 512, 512)), torch.randn((batch_size, 1, 110, 512))
 
-    f = ForwardBackwardLayer(A, .01)
-
+    if tomosipo:
+        from operators.radon import RadonTransform
+        operator = RadonTransform(image_batch_size=batch_size).operator()
+    else:
+        operator = torch.randn((110, 512))
+        
+    f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
     x_inf = f(x, y)
-    loss = nn.MSELoss()(A @ x_inf, y)
-    loss.backward()
 
+    if tomosipo:
+        loss = nn.MSELoss()(operator(x_inf), y)
+    else:
+        loss = nn.MSELoss()(operator @ x_inf, y)
+    
+    loss.backward()
     print(loss.item())
