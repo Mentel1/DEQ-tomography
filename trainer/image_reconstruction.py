@@ -6,10 +6,15 @@ def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler
     """
     total_loss = 0.
     _ = model.eval() if opt is None else model.train()
-    for radon_trans, images in loader:
-        images, radon_trans = images.to(device), radon_trans.to(device)
-        x_inf = model(images, radon_trans)
-        loss = nn.MSELoss()(operator @ x_inf, radon_trans)
+    for sinograms, images in loader:
+        images, sinograms = images.to(device), sinograms.to(device)
+        x_inf = model(images, sinograms)
+        
+        if type(operator) == 'Tensor':
+          loss = nn.MSELoss()(operator @ x_inf, sinograms)
+        else:
+          loss = nn.MSELoss()(operator(x_inf.squeeze(1)).unsqueeze(1), sinograms)
+          
         if opt:
             opt.zero_grad()
             loss.backward()
