@@ -26,6 +26,7 @@ else:
     operator = torch.randn((110, 512))
 
 f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
+# Play with anderson's hyperparameter in case solver raises singular matrix errors
 model = ReconstructionDEQ(f, anderson, tol=1e-2, max_iter=25, m=5).to(device)
 opt = optim.Adam(model.parameters(), lr=1e-3)
 
