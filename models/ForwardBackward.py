@@ -45,10 +45,7 @@ class ForwardBackwardLayer(nn.Module):
         Forward pass
         """
         if self.tomosipo_:
-            # We have to remove the channel dimension to apply the tomosipo operator
-            temp = self.operator_.T(targets.squeeze(1) - self.operator_(input_batch.squeeze(1)))
-            # And then put it back so the whole manoeuvre is invisible to pytorch
-            output = input_batch - self.learning_rate_ * temp.unsqueeze(1)
+            output = input_batch - self.learning_rate_ * self.operator_.T(targets - self.operator_(input_batch))
         else:
             output = input_batch - self.learning_rate_ * self.operator_.T @ (targets - self.operator_ @ input_batch)
 
@@ -57,14 +54,16 @@ class ForwardBackwardLayer(nn.Module):
 
 if __name__ == "__main__":
     torch.manual_seed(0)
-    batch_size = 3
-    tomosipo = False
 
-    x, y = torch.randn((batch_size, 1, 512, 512)), torch.randn((batch_size, 1, 110, 512))
+    batch_size = 3
+    channels=1
+    tomosipo = True # Change this to False if tomosipo environment not activated
+
+    x, y = torch.randn((batch_size, channels, 512, 512)), torch.randn((batch_size, channels, 110, 512))
 
     if tomosipo:
         from operators.radon import RadonTransform
-        operator = RadonTransform(image_batch_size=batch_size).operator()
+        operator = RadonTransform(channels=channels)
     else:
         operator = torch.randn((110, 512))
         
@@ -75,6 +74,6 @@ if __name__ == "__main__":
         loss = nn.MSELoss()(operator(x_inf), y)
     else:
         loss = nn.MSELoss()(operator @ x_inf, y)
-    
+
     loss.backward()
     print(loss.item())
