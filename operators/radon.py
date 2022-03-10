@@ -1,4 +1,7 @@
+import torch
 import tomosipo as ts
+
+from tomosipo.torch_support import to_autograd
 
 class RadonTransform():
     '''
@@ -11,13 +14,21 @@ class RadonTransform():
     the inverse problem (that is, our image reconstruction problem).
     '''
 
-    def __init__(self, image_batch_size=5, image_size=(512, 512), nb_angles=110) -> None:
-        vg = ts.volume(shape=(image_batch_size, *image_size))
-        pg = ts.parallel(angles=nb_angles, shape=(image_batch_size, image_size[1]))
-        self.operator_ = ts.operator(vg, pg)
+    def __init__(self, channels=1, image_size=(512, 512), nb_angles=110) -> None:
+        vg = ts.volume(shape=(channels, *image_size))
+        pg = ts.parallel(angles=nb_angles, shape=(channels, image_size[1]))
+        self.operator = ts.operator(vg, pg)
+        self.torch_operator = to_autograd(self.operator)
+        self.transposed_torch_operator_ = to_autograd(self.operator.T)
+        
+    def T(self, x):
+        '''
+        Transposed operator apply
+        '''
+        return self.transposed_torch_operator_(x)
 
-    def operator(self):
+    def __call__(self, x):
         '''
-        Returns the instantiated operator
+        Redifines calling the operator on a tensor
         '''
-        return self.operator_
+        return self.torch_operator(x)
