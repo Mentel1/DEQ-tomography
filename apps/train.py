@@ -13,7 +13,7 @@ torch.manual_seed(0)
 
 batch_size = 5
 channels = 1
-tomosipo = True # Change this to False if no tomosipo environment available
+tomosipo = False # Change this to False if no tomosipo environment available
 
 # Data loading
 train_dataset = Tomography('./data/')
@@ -25,7 +25,7 @@ if tomosipo:
     from operators.radon import RadonTransform
     operator = RadonTransform(channels=channels)
 else:
-    operator = torch.randn((110, 512))
+    operator = torch.randn((110, 512), requires_grad=False)
 
 f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
 
