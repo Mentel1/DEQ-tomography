@@ -9,24 +9,34 @@ class MiniUNet(nn.Module):
     def __init__(self, input_size=(512, 512)):
         super().__init__()
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=8, kernel_size=3)
+        self.norm1 = nn.BatchNorm2d(num_features=8)
+
         self.conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3)
+        self.norm2 = nn.BatchNorm2d(num_features=16)
+
         self.max_pool1 = nn.MaxPool2d(kernel_size=2)
+
         self.conv3 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)
+        self.norm3 = nn.BatchNorm2d(num_features=32)
+
         self.conv4 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3)
+        self.norm4 = nn.BatchNorm2d(num_features=64)
         self.upsample = nn.Upsample(size=list(input_size))
+
         self.conv5 = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=1)
+        self.norm5 = nn.BatchNorm2d(num_features=1)
 
     def forward(self, input_batch):
         """
         Forward pass
         """
-        output = F.relu(self.conv1(input_batch))
-        output = F.relu(self.conv2(output))
+        output = self.norm1(F.relu(self.conv1(input_batch)))
+        output = self.norm2(F.relu(self.conv2(output)))
         output = self.max_pool1(output)
-        output = F.relu(self.conv3(output))
-        output = F.relu(self.conv4(output))
+        output = self.norm3(F.relu(self.conv3(output)))
+        output = self.norm4(F.relu(self.conv4(output)))
         output = self.upsample(output)
-        output = F.relu(self.conv5(output))
+        output = self.norm5(F.relu(self.conv5(output)))
         return output
 
 class ForwardBackwardLayer(nn.Module):
@@ -45,9 +55,9 @@ class ForwardBackwardLayer(nn.Module):
         Forward pass
         """
         if self.tomosipo_:
-            output = input_batch - self.learning_rate_ * self.operator_.T(targets - self.operator_(input_batch))
+            output = input_batch - self.learning_rate_ * self.operator_.T(self.operator_(input_batch) - targets)
         else:
-            output = input_batch - self.learning_rate_ * self.operator_.T @ (targets - self.operator_ @ input_batch)
+            output = input_batch - self.learning_rate_ * self.operator_.T @ (self.operator_ @ input_batch - targets)
 
         output = self.prox(output)
         return output
