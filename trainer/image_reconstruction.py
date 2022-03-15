@@ -9,11 +9,13 @@ def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler
     for sinograms, images in loader:
         images, sinograms = images.to(device), sinograms.to(device)
         x_inf = model(images, sinograms)
+
+        loss = nn.MSELoss()(x_inf, images)
         
-        if type(operator) == 'Tensor':
-          loss = nn.MSELoss()(operator @ x_inf, sinograms)
-        else:
-          loss = nn.MSELoss()(operator(x_inf), sinograms)
+        # if type(operator) == 'Tensor':
+        #   loss = nn.MSELoss()(operator @ x_inf, sinograms)
+        # else:
+        #   loss = nn.MSELoss()(operator(x_inf), sinograms)
           
         if opt:
             opt.zero_grad()
