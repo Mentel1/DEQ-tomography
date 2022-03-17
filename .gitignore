@@ -3,3 +3,12 @@
 
 # Ada Library Information
 *.ali
+
+# Data folder
+data
+
+# Cache
+*/__pycache__
+
+# Package files
+*.egg-info
