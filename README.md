@@ -41,7 +41,7 @@ We obviously didn't push our dataset to Github for performance and confidentiali
 
 where each input and output folder couples should have the same number of files. Furthermore, for a given input file, the corresponding output file should have the same name (i.e if the input file is `13.mat`, so is the ouput file in the output folder).
 
-Finally, you should change a few lines of code in `utils.DataLoaders.py` depending on the lengths of your datasets, right here:
+Finally, you should change a few lines of code in `loader.DataLoaders.py` depending on the lengths of your datasets, right here:
 
 ```python
     def __len__(self):
@@ -53,7 +53,7 @@ Finally, you should change a few lines of code in `utils.DataLoaders.py` dependi
             return 10  # The size of the validationd dataset
 ```
 
-Feel free to modify the `utils.DataLoaders.py` even further, to better suit your needs and your input data.
+Feel free to modify the `loader.DataLoaders.py` even further, to better suit your needs and your input data.
 
 # To do
 
@@ -63,8 +63,8 @@ Feel free to modify the `utils.DataLoaders.py` even further, to better suit your
 
 - [x] Implement a data loading class to plug at the very beginning of any pytorch pipeline.
 
-- [ ] Create the actual pytorch model, according to the design we agreed upon.
+- [x] Create the actual pytorch model, according to the design we agreed upon.
 
-- [ ] Create the trainers
+- [x] Create the trainers
 
-- [ ] Create the monitors to keep track of the performances throughout training and after.
+- [ ] Create the monitors to keep track of the performances throughout training and after: For instance, a **utility that prints reconstructed images** throughout training.

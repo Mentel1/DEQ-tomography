@@ -6,6 +6,10 @@
 
 # Data folder
 data
+runs
 
 # Cache
 */__pycache__
+
+# Package files
+*.egg-info
