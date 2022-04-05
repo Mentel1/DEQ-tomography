@@ -98,8 +98,8 @@ class Tomography(torch.utils.data.Dataset):
 
     def __len__(self):
         if self.set_name_ == "train":
-            return 10  # The size of the train dataset
+            return 2500  # The size of the train dataset
         elif self.set_name_ == "test":
-            return 5  # The size of the test dataset
+            return 500  # The size of the test dataset
         else:
             return 10  # The size of the validationd dataset

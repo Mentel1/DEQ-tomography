@@ -60,4 +60,4 @@ def eval(path_model, path_img, path_sino, tomosipo=True, file="result.jpg"):
 if __name__ == "__main__":
 
     i = 200
-    eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=False, file=f"results_{i}.jpg")
+    eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=True, file=f"results_{i}.jpg")
