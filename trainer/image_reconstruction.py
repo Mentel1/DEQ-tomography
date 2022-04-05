@@ -1,8 +1,6 @@
 import torch.nn as nn
 import torch
 
-from operators.normalize import normalize
-
 def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler=None):
     """
     The trainer to call at each epoch
@@ -12,13 +10,11 @@ def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler
     for sinograms, images in loader:
         images, sinograms = images.to(device), sinograms.to(device)
         x_inf = model(images, sinograms)
-        x_inf = normalize(x_inf)
 
         if torch.is_tensor(operator):
           loss = nn.MSELoss()(operator @ x_inf, sinograms)
         else:
           loss = nn.MSELoss(reduction='mean')(operator.torch_operator(x_inf), sinograms).to(device)
-          loss = loss/1
           
         if opt:
             opt.zero_grad()
@@ -26,7 +22,6 @@ def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler
             opt.step()
             lr_scheduler.step()
 
-        # total_loss += loss.item() * images.shape[0]
         total_loss += loss.item()
 
     return total_loss / len(loader.dataset)
