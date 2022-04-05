@@ -11,7 +11,10 @@ import matplotlib.pyplot as plt
 import scipy.io
 import numpy as np
 
-def eval(path_model, path_img, path_sino, tomosipo=True):
+def eval(path_model, path_img, path_sino, tomosipo=True, file="result.jpg"):
+    """
+    Function plotting one image reconstructed for the sinogramme at path_sino, alongside the real image corresponding
+    """
 
     if tomosipo:
         from operators.radon import RadonTransform
@@ -36,7 +39,6 @@ def eval(path_model, path_img, path_sino, tomosipo=True):
     sino = torch.from_numpy(np.array([[scipy.io.loadmat(path_sino)["data"]]])).to(device)
     
     x_result = model(img, sino)
-    # x_inf = normalize(x_inf)
 
     if torch.is_tensor(operator):
         loss = nn.MSELoss()(operator @ x_result, sino)
@@ -44,20 +46,18 @@ def eval(path_model, path_img, path_sino, tomosipo=True):
         loss = nn.MSELoss()(operator.torch_operator(x_result), sino).to(device)
         loss = loss/1
 
-    # total_loss += loss.item() * images.shape[0]
     loss = loss.item()
 
 
-    print(torch.max(x_result))
+    print("Loss for this image : "+str(loss))
 
     fig, axes = plt.subplots(1,2)
     axes[0].imshow(np.flipud(x_result.detach().cpu().numpy().reshape(512, 512)), cmap='gray')
     axes[1].imshow(img.detach().cpu().numpy().reshape(512, 512), cmap='gray')
     plt.show()
-    plt.savefig("result.jpg")
+    plt.savefig(file)
 
 if __name__ == "__main__":
 
-    for i in range(200, 201):
-
-        eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=True)
+    i = 200
+    eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=False, file=f"results_{i}.jpg")
