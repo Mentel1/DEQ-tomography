@@ -19,7 +19,7 @@ torch.manual_seed(0)
 
 batch_size = 25
 channels = 1
-tomosipo = False # Change this to False if no tomosipo environment available
+tomosipo = True # Change this to False if no tomosipo environment available
 
 # Data loading
 train_dataset = Tomography('./data/')
