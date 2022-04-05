@@ -31,6 +31,8 @@ def eval(path_model, path_img, path_sino, tomosipo=True):
     model.load_state_dict(torch.load(path_model, map_location=device) )
     model.eval()
     img = torch.from_numpy(np.array([[scipy.io.loadmat(path_img)["data"]]])).to(device)
+    # The following line enables to test that the model doesn't use the image data to compute an image, only the sinogramm
+    # img = torch.zeros_like(img)
     sino = torch.from_numpy(np.array([[scipy.io.loadmat(path_sino)["data"]]])).to(device)
     
     x_result = model(img, sino)
@@ -49,12 +51,13 @@ def eval(path_model, path_img, path_sino, tomosipo=True):
     print(torch.max(x_result))
 
     fig, axes = plt.subplots(1,2)
-    axes[0].imshow(x_result.detach().numpy().reshape(512, 512), cmap='gray')
-    axes[1].imshow(img.detach().numpy().reshape(512, 512), cmap='gray')
+    axes[0].imshow(np.flipud(x_result.detach().cpu().numpy().reshape(512, 512)), cmap='gray')
+    axes[1].imshow(img.detach().cpu().numpy().reshape(512, 512), cmap='gray')
     plt.show()
+    plt.savefig("result.jpg")
 
 if __name__ == "__main__":
 
     for i in range(200, 201):
 
-        eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=False)
+        eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=True)
