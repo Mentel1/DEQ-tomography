@@ -1,0 +1,60 @@
+
+import sys
+sys.path.insert(0, 'C:/Users/Lila/Documents/Centrale/3A/Projet Deep Equilibrium/Git projet/DEQ-tomography')
+
+import torch
+import torch.nn as nn
+from models.DEQ import ReconstructionDEQ
+from solver.anderson import anderson
+from models.ForwardBackward import ForwardBackwardLayer
+import matplotlib.pyplot as plt
+import scipy.io
+import numpy as np
+
+def eval(path_model, path_img, path_sino, tomosipo=True):
+
+    if tomosipo:
+        from operators.radon import RadonTransform
+        operator = RadonTransform(channels=1)
+    else:
+        operator = torch.randn((110, 512))
+
+    f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
+    tol=1e-2
+    max_iter=50
+    beta=0.1
+    lam=1e-2
+    lr=1e-4
+    device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # Play with anderson's hyperparameter in case solver raises singular matrix errors
+    model = ReconstructionDEQ(f, anderson, tol=tol, max_iter=max_iter, beta=beta, lam=lam).to(device)
+    model.load_state_dict(torch.load(path_model, map_location=device) )
+    model.eval()
+    img = torch.from_numpy(np.array([[scipy.io.loadmat(path_img)["data"]]])).to(device)
+    sino = torch.from_numpy(np.array([[scipy.io.loadmat(path_sino)["data"]]])).to(device)
+    
+    x_result = model(img, sino)
+    # x_inf = normalize(x_inf)
+
+    if torch.is_tensor(operator):
+        loss = nn.MSELoss()(operator @ x_result, sino)
+    else:
+        loss = nn.MSELoss()(operator.torch_operator(x_result), sino).to(device)
+        loss = loss/1
+
+    # total_loss += loss.item() * images.shape[0]
+    loss = loss.item()
+
+
+    print(torch.max(x_result))
+
+    fig, axes = plt.subplots(1,2)
+    axes[0].imshow(x_result.detach().numpy().reshape(512, 512), cmap='gray')
+    axes[1].imshow(img.detach().numpy().reshape(512, 512), cmap='gray')
+    plt.show()
+
+if __name__ == "__main__":
+
+    for i in range(200, 201):
+
+        eval(f"model_weights.pth", f"data/test/output/{i}.mat", f"data/test/input/{i}.mat", tomosipo=False)
