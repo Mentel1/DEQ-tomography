@@ -2,9 +2,6 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
-import sys
-# sys.path.insert(0, 'C:/Users/Lila/Documents/Centrale/3A/Projet Deep Equilibrium/Git projet/DEQ-tomography')
-
 from loader.DataLoaders import Tomography
 from printer.progress import print_progress
 from solver.anderson import anderson
@@ -20,6 +17,16 @@ torch.manual_seed(0)
 batch_size = 25
 channels = 1
 tomosipo = True # Change this to False if no tomosipo environment available
+lr_model=1e-4
+MAX_EPOCH = 50
+num_epochs = 10
+lr_fb = 0.01
+# Anderson's
+tol=1e-2
+max_iter=50
+beta=0.1
+lam=1e-2
+
 
 # Data loading
 train_dataset = Tomography('./data/')
@@ -33,19 +40,15 @@ if tomosipo:
 else:
     operator = torch.randn((110, 512))
 
-f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
-tol=1e-2
-max_iter=50
-beta=0.1
-lam=1e-2
-lr=1e-4
+f = ForwardBackwardLayer(operator, lr_fb, tomosipo=tomosipo)
+
 # Play with anderson's hyperparameter in case solver raises singular matrix errors
 model = ReconstructionDEQ(f, anderson, tol=tol, max_iter=max_iter, beta=beta, lam=lam).to(device)
-opt = optim.Adam(model.parameters(), lr=lr)
+opt = optim.Adam(model.parameters(), lr=lr_model)
 
-MAX_EPOCH = 50
+
 scheduler = optim.lr_scheduler.CosineAnnealingLR(opt, MAX_EPOCH * len(train_loader), eta_min=1e-6)
-num_epochs = 10
+
 
 writer = SummaryWriter()
 
