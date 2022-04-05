@@ -13,3 +13,5 @@ runs
 
 # Package files
 *.egg-info
+test.png
+test.py
