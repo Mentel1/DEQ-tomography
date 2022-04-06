@@ -50,7 +50,7 @@ opt = optim.Adam(model.parameters(), lr=lr_model)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(opt, MAX_EPOCH * len(train_loader), eta_min=1e-6)
 
 
-# writer = SummaryWriter()
+writer = SummaryWriter()
 
 train_loss = []
 test_loss = []
@@ -59,17 +59,26 @@ for i in range(num_epochs):
 
     epoch_train_loss = reconstruction_epoch(train_loader, model, operator, device, opt, scheduler)
     epoch_test_loss = reconstruction_epoch(test_loader, model, operator, device)
-    # writer.add_scalar("Loss/test", epoch_test_loss, i)
-    # writer.add_scalar("Loss/train", epoch_train_loss, i)
-    # writer.add_scalars(f'Loss/both', {'test': epoch_test_loss,'train': epoch_train_loss,}, i)
+    writer.add_scalar("Loss/test", epoch_test_loss, i)
+    writer.add_scalar("Loss/train", epoch_train_loss, i)
+    writer.add_scalars(f'Loss/both', {'test': epoch_test_loss,'train': epoch_train_loss,}, i)
     train_loss.append(epoch_train_loss)
     test_loss.append(epoch_test_loss)
     print_progress(i, num_epochs, epoch_test_loss, training=False)
 
-# writer.flush()
+writer.flush()
 # To see results, run 'tensorboard --logdir=runs' and go to the provided url (or to http://localhost:6006/)
 
-to_save = model
-torch.save(to_save, 'model_weights.pth')
+torch.save({"batch_size" : batch_size,
+            "lr_model" : lr_model,
+            "MAX_EPOCH" : MAX_EPOCH,
+            "num_epochs" : num_epochs,
+            "lr_fb" : lr_fb,
+            "tol" : tol,
+            "max_iter" : max_iter,
+            "beta" : beta,
+            "lam" : lam,
+            'model_state_dict': model.state_dict()}, 
+	    'model_weight.pth')
     
 loss_printer(train_loss, test_loss, tol, max_iter, beta, lam, MAX_EPOCH, num_epochs, lr_model, lr_fb)
