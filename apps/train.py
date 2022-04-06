@@ -69,7 +69,7 @@ for i in range(num_epochs):
 writer.flush()
 # To see results, run 'tensorboard --logdir=runs' and go to the provided url (or to http://localhost:6006/)
 
-torch.save(model.state_dict(), 'model_weights.pth')
+torch.save(model, 'model_weights.pth')
     
 plt.figure()
 plt.plot(train_loss[1:], label="train")

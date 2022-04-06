@@ -22,16 +22,16 @@ def eval(path_model, path_img, path_sino, tomosipo=True, file="result.jpg"):
     else:
         operator = torch.randn((110, 512))
 
-    f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
-    tol=1e-2
-    max_iter=50
-    beta=0.1
-    lam=1e-2
-    lr=1e-4
+    # f = ForwardBackwardLayer(operator, .01, tomosipo=tomosipo)
+    # tol=1e-2
+    # max_iter=50
+    # beta=0.1
+    # lam=1e-2
+    # lr=1e-4
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # Play with anderson's hyperparameter in case solver raises singular matrix errors
-    model = ReconstructionDEQ(f, anderson, tol=tol, max_iter=max_iter, beta=beta, lam=lam).to(device)
-    model.load_state_dict(torch.load(path_model, map_location=device) )
+    # model = ReconstructionDEQ(f, anderson, tol=tol, max_iter=max_iter, beta=beta, lam=lam).to(device)
+    model = torch.load(path_model, map_location=device)
     model.eval()
     img = torch.from_numpy(np.array([[scipy.io.loadmat(path_img)["data"]]])).to(device)
     # The following line enables to test that the model doesn't use the image data to compute an image, only the sinogramm
