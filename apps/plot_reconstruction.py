@@ -36,7 +36,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 f = ForwardBackwardLayer(operator, lr_fb, tomosipo=tomosipo)
 model = ReconstructionDEQ(f, anderson, tol=tol, max_iter=max_iter, beta=beta, lam=lam).to(device)
-model.load_state_dict(model_infos['model_state_dict'], map_location=device)
+model.load_state_dict(model_infos['model_state_dict'])
 model.eval()
 
 sino = torch.from_numpy(np.array([[scipy.io.loadmat(path_sino)["data"]]])).to(device)
