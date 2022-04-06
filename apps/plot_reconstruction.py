@@ -41,7 +41,7 @@ model.eval()
 
 sino = torch.from_numpy(np.array([[scipy.io.loadmat(path_sino)["data"]]])).to(device)
 
-x_result = model(torch.zeros(1,1,512,512), sino)
+x_result = model(torch.zeros(1,1,512,512).to(device), sino)
 
 if torch.is_tensor(operator):
     loss = nn.MSELoss()(operator @ x_result, sino)
