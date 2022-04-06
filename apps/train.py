@@ -79,6 +79,6 @@ torch.save({"batch_size" : batch_size,
             "beta" : beta,
             "lam" : lam,
             'model_state_dict': model.state_dict()}, 
-	    'model_weight.pth')
+	    'model_weights/model_weights.pth')
     
 loss_printer(train_loss, test_loss, tol, max_iter, beta, lam, MAX_EPOCH, num_epochs, lr_model, lr_fb)

@@ -10,7 +10,7 @@ from solver.anderson import anderson
 
 tomosipo = True
 i = 200
-path_model = f"model_weight.pth"
+path_model = f"model_weights/model_weights.pth"
 path_sino = f"data/test/input/{i}.mat"
 path_img = f"data/test/output/{i}.mat"
 

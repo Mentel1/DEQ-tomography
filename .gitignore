@@ -15,3 +15,5 @@ runs
 *.egg-info
 test.png
 test.py
+model_weights/model_weights_quick.pth
+model_weights/model_weights.pth
