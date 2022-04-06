@@ -1,6 +1,5 @@
 import torch
 import torch.optim as optim
-import matplotlib.pyplot as plt
 
 from loader.DataLoaders import Tomography
 from printer.progress import print_progress
@@ -8,6 +7,7 @@ from solver.anderson import anderson
 from models.ForwardBackward import ForwardBackwardLayer
 from models.DEQ import ReconstructionDEQ
 from trainer.image_reconstruction import reconstruction_epoch
+from printer.loss_printer import loss_printer
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -69,12 +69,7 @@ for i in range(num_epochs):
 writer.flush()
 # To see results, run 'tensorboard --logdir=runs' and go to the provided url (or to http://localhost:6006/)
 
-torch.save(model, 'model_weights.pth')
+to_save = model
+torch.save(to_save, 'model_weights.pth')
     
-plt.figure()
-plt.plot(train_loss[1:], label="train")
-plt.plot(test_loss[1:], 'r', label="test")
-plt.title(f"tol={tol}, max_iter={max_iter}, beta={beta}, lam={lam}, MAX_EPOCH={MAX_EPOCH}, num_epochs={num_epochs}, lr={lr}")
-plt.legend()
-plt.semilogy()
-plt.savefig(f"tol={tol}, max_iter={max_iter}, beta={beta}, lam={lam}, MAX_EPOCH={MAX_EPOCH}, num_epochs={num_epochs}, lr={lr}.png")
+loss_printer(train_loss, test_loss, tol, max_iter, beta, lam, MAX_EPOCH, num_epochs, lr_model, lr_fb)
