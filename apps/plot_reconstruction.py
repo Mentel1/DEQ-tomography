@@ -54,4 +54,4 @@ loss = loss.item()
 print("Loss for this image : "+str(loss))
 
 img = torch.from_numpy(np.array([[scipy.io.loadmat(path_img)["data"]]])).to(device)
-reconstruction_printer(x_result, img)
+reconstruction_printer(x_result, img, i)
