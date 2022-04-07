@@ -51,7 +51,7 @@ class ReconstructionDEQ(nn.Module):
         compute forward pass and re-engage autograd tape
         """
         with torch.no_grad():
-            fixed_point, self.forward_res = self.solver(lambda x: self.f(x, targets), torch.zeros_like(input_batch), **self.kwargs)
+            fixed_point, self.forward_res = self.solver(lambda x: self.f(x, targets), torch.ones_like(input_batch), **self.kwargs)
 
         z = self.f(fixed_point, targets)
         
