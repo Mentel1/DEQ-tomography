@@ -45,7 +45,7 @@ class ForwardBackwardLayer(nn.Module):
         Forward pass
         """
         if self.tomosipo_:
-            output = input_batch - self.learning_rate_ * self.operator_.T(targets - self.operator_.torch_operator(input_batch))
+            output = input_batch - self.learning_rate_ * self.operator_.T(targets - self.operator_(input_batch))
         else:
             output = input_batch - self.learning_rate_ * self.operator_.T @ (targets - self.operator_ @ input_batch)
 

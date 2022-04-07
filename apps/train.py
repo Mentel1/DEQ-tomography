@@ -1,5 +1,6 @@
 import torch
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 
 from loader.DataLoaders import Tomography
 from printer.progress import print_progress
@@ -9,7 +10,6 @@ from models.DEQ import ReconstructionDEQ
 from trainer.image_reconstruction import reconstruction_epoch
 from printer.loss_printer import loss_printer
 
-from torch.utils.tensorboard import SummaryWriter
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 torch.manual_seed(0)
@@ -26,7 +26,6 @@ tol=1e-2
 max_iter=50
 beta=0.1
 lam=1e-2
-
 
 # Data loading
 train_dataset = Tomography('./data/')

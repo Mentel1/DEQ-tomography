@@ -1,5 +1,5 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
 
 def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler=None):
     """
@@ -15,7 +15,7 @@ def reconstruction_epoch(loader, model, operator, device, opt=None, lr_scheduler
         if torch.is_tensor(operator):
           loss = nn.MSELoss()(operator @ x_inf, sinograms)
         else:
-          loss = nn.MSELoss(reduction='mean')(operator.torch_operator(x_inf), sinograms).to(device)
+          loss = nn.MSELoss(reduction='mean')(operator(x_inf), sinograms).to(device)
           
         if opt:
             opt.zero_grad()
