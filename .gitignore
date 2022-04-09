@@ -3,3 +3,17 @@
 
 # Ada Library Information
 *.ali
+
+# Data folder
+data
+runs
+
+# Cache
+*/__pycache__
+
+# Package files
+*.egg-info
+test.png
+test.py
+model_weights/model_weights_quick.pth
+model_weights/model_weights.pth
